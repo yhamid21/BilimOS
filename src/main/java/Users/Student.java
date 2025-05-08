@@ -11,10 +11,8 @@ public class Student extends User {
     private List<Grade> grades;
     private List<Notification> notifications;
 
-
-
-    public Student(String id, String name, String email, Date dob) {
-        super(id, name, email, dob);
+    public Student(String id, String name, String email, Date dob, String password) {
+        super(id, name, email, dob, password);
         this.assignments = new ArrayList<>();
         this.grades = new ArrayList<>();
         this.notifications = new ArrayList<>();
@@ -40,11 +38,9 @@ public class Student extends User {
         return notifications;
     }
 
-
     public void addNotification(Notification notification) {
         notifications.add(notification);
     }
-
 
     public List<Grade> getGradesByCourse(String courseName) {
         return grades.stream()

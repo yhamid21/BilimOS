@@ -23,19 +23,19 @@ public class RegisterFrame extends JFrame {
         title.setForeground(new Color(210, 210, 210));
 
         JTextField nameField = new JTextField();
-        nameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+        nameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         nameField.setBorder(BorderFactory.createTitledBorder("Name"));
 
         JTextField emailField = new JTextField();
-        emailField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+        emailField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         emailField.setBorder(BorderFactory.createTitledBorder("Email"));
 
         JPasswordField passwordField = new JPasswordField();
-        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         passwordField.setBorder(BorderFactory.createTitledBorder("Password"));
 
         JTextField dobField = new JTextField();
-        dobField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+        dobField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         dobField.setBorder(BorderFactory.createTitledBorder("Date of Birth (yyyy-mm-dd)"));
 
         // User type selection

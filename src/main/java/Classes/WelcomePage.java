@@ -2,14 +2,13 @@ package Classes;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
-public class HomePage extends JFrame {
+public class WelcomePage extends JFrame {
     private JPanel mainPanel;
     private JButton loginButton;
     private JButton registerButton;
 
-    public HomePage() {
+    public WelcomePage() {
         setTitle("BilimOS Dashboard");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1280, 720);
@@ -102,7 +101,7 @@ public class HomePage extends JFrame {
 
 
     private void showLoginDialog() {
-        new LoginFrame().setVisible(true);
+        new LoginFrame(this).setVisible(true);
     }
 
     private void showRegisterDialog() {
@@ -118,8 +117,8 @@ public class HomePage extends JFrame {
 
         // Create and show the home page
         SwingUtilities.invokeLater(() -> {
-            HomePage homePage = new HomePage();
-            homePage.setVisible(true);
+            WelcomePage welcomePage = new WelcomePage();
+            welcomePage.setVisible(true);
         });
     }
 }

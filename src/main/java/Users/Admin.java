@@ -11,21 +11,21 @@ public class Admin extends User {
     private List<Student> createdStudents;
     private List<Teacher> createdTeachers;
 
-    public Admin(String id, String name, String email, Date dob) {
-        super(id, name, email, dob);
+    public Admin(String id, String name, String email, Date dob, String password) {
+        super(id, name, email, dob, password);
         this.createdCourses = new ArrayList<>();
         this.createdStudents = new ArrayList<>();
         this.createdTeachers = new ArrayList<>();
     }
 
-    public Student createStudent(String id, String name, String email, Date dob) {
-        Student student = new Student(id, name, email, dob);
+    public Student createStudent(String id, String name, String email, Date dob, String password) {
+        Student student = new Student(id, name, email, dob, password);
         createdStudents.add(student);
         return student;
     }
 
-    public Teacher createTeacher(String id, String name, String email, Date dob) {
-        Teacher teacher = new Teacher(id, name, email, dob);
+    public Teacher createTeacher(String id, String name, String email, Date dob, String password) {
+        Teacher teacher = new Teacher(id, name, email, dob, password);
         createdTeachers.add(teacher);
         return teacher;
     }

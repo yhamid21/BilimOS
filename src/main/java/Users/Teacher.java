@@ -12,8 +12,8 @@ public class Teacher extends User {
     private List<Notification> notifications;
 
 
-    public Teacher(String id, String name, String email, Date dob) {
-        super(id, name, email, dob);
+    public Teacher(String id, String name, String email, Date dob, String password) {
+        super(id, name, email, dob, password);
         this.courses = new ArrayList<>();
         this.notifications = new ArrayList<>();
     }

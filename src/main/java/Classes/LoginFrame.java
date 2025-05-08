@@ -1,10 +1,21 @@
 package Classes;
 
+import Users.Admin;
+import Users.Student;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class LoginFrame extends JFrame {
+    private WelcomePage welcomePage;
+
     public LoginFrame() {
+        this(null);
+    }
+
+    public LoginFrame(WelcomePage welcomePage) {
+        this.welcomePage = welcomePage;
         setTitle("Login - Learning Management System");
         setSize(370, 260);
         setLocationRelativeTo(null);
@@ -21,11 +32,11 @@ public class LoginFrame extends JFrame {
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JTextField emailField = new JTextField();
-        emailField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+        emailField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         emailField.setBorder(BorderFactory.createTitledBorder("Email"));
 
         JPasswordField passwordField = new JPasswordField();
-        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         passwordField.setBorder(BorderFactory.createTitledBorder("Password"));
 
         JButton submit = new JButton("Login");
@@ -56,8 +67,47 @@ public class LoginFrame extends JFrame {
             if (user != null) {
                 msgLabel.setText("Welcome, " + user.name + " (" + user.type + ")");
                 msgLabel.setForeground(new Color(90, 180, 90));
-                Timer t = new Timer(1200, evt -> dispose());
-                t.setRepeats(false); t.start();
+
+                // Open appropriate home page based on user type
+                if (user.type == UserManager.UserType.STUDENT) {
+                    Timer t = new Timer(1200, evt -> {
+                        // Get the actual Student object
+                        Student student = (Student) UserManager.getUser(user.email);
+                        // Get enrolled courses
+                        List<Course> enrolledCourses = CourseRegistry.getEnrolledCourses(student);
+                        // Create and show HomePage
+                        StudentHomePage studentHomePage = new StudentHomePage(student, enrolledCourses);
+                        studentHomePage.setVisible(true);
+                        // Close the welcome page if it exists
+                        if (welcomePage != null) {
+                            welcomePage.dispose();
+                        }
+                        dispose();
+                    });
+                    t.setRepeats(false); t.start();
+                } else if (user.type == UserManager.UserType.ADMIN) {
+                    Timer t = new Timer(1200, evt -> {
+                        // Get the actual Admin object
+                        Admin admin = (Admin) UserManager.getUser(user.email);
+                        // Create and show AdminHomePage
+                        AdminHomePage adminHomePage = new AdminHomePage(admin);
+                        adminHomePage.setVisible(true);
+                        // Close the welcome page if it exists
+                        if (welcomePage != null) {
+                            welcomePage.dispose();
+                        }
+                        dispose();
+                    });
+                    t.setRepeats(false); t.start();
+                } else {
+                    Timer t = new Timer(1200, evt -> {
+                        if (welcomePage != null) {
+                            welcomePage.dispose();
+                        }
+                        dispose();
+                    });
+                    t.setRepeats(false); t.start();
+                }
             } else {
                 msgLabel.setText("Invalid email or password.");
                 msgLabel.setForeground(new Color(230,70,70));

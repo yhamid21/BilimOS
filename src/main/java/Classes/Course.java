@@ -20,6 +20,10 @@ public class Course {
 
     }
 
+    public boolean isStudentEnrolled(Student student) {
+        return students.contains(student);
+    }
+
     public void enrollStudent(Student student) {
         students.add(student);
     }
