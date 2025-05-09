@@ -14,6 +14,9 @@ public class WelcomePage extends JFrame {
         setSize(1280, 720);
         setLocationRelativeTo(null);
 
+        // Set application icon
+        MainApp.setAppIcon(this);
+
         // Outer background panel (keeps card centered)
         JPanel backgroundPanel = new JPanel(new GridBagLayout());
         backgroundPanel.setBackground(new Color(36, 37, 42)); // or UIManager.getColor("Panel.background")

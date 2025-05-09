@@ -4,6 +4,7 @@ import Users.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.UUID;
 public class AdminHomePage extends JFrame {
     private Admin admin;
     private JTabbedPane tabbedPane;
+    private JPanel homePanel;
     private JPanel userManagementPanel;
     private JPanel courseManagementPanel;
     private JComboBox<String> teacherComboBox;
@@ -27,14 +29,19 @@ public class AdminHomePage extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+        // Set application icon
+        MainApp.setAppIcon(this);
+
         // Create tabbed pane
         tabbedPane = new JTabbedPane();
 
         // Create panels for each tab
+        createHomePanel();
         createUserManagementPanel();
         createCourseManagementPanel();
 
         // Add panels to tabbed pane
+        tabbedPane.addTab("Home", homePanel);
         tabbedPane.addTab("User Management", userManagementPanel);
         tabbedPane.addTab("Course Management", courseManagementPanel);
 
@@ -432,5 +439,229 @@ public class AdminHomePage extends JFrame {
                 enrolledStudentsListModel.addElement(student.getName() + " (" + student.getEmail() + ")");
             }
         }
+    }
+
+    private void createHomePanel() {
+        homePanel = new JPanel();
+        homePanel.setLayout(new BorderLayout());
+
+        // Create a split pane to divide the panel into left (info) and right (profile photo)
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setResizeWeight(0.7); // Left panel gets 70% of the space
+
+        // Create panel for admin information
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setBorder(BorderFactory.createTitledBorder("Admin Information"));
+
+        // Add admin information
+        JLabel nameLabel = new JLabel("Name: " + admin.getName());
+        JLabel idLabel = new JLabel("ID: " + admin.getId());
+        JLabel emailLabel = new JLabel("Email: " + admin.getEmail());
+        JLabel dobLabel = new JLabel("Date of Birth: " + admin.getDob());
+
+        // Style the labels
+        Font labelFont = new Font("Arial", Font.PLAIN, 14);
+        nameLabel.setFont(labelFont);
+        idLabel.setFont(labelFont);
+        emailLabel.setFont(labelFont);
+        dobLabel.setFont(labelFont);
+
+        // Add padding
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        idLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        emailLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        dobLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        // Add labels to info panel
+        infoPanel.add(nameLabel);
+        infoPanel.add(idLabel);
+        infoPanel.add(emailLabel);
+        infoPanel.add(dobLabel);
+
+        // Create buttons
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setBackground(new Color(83, 109, 254));
+        logoutButton.setForeground(Color.WHITE);
+        logoutButton.setFocusPainted(false);
+        logoutButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+        JButton changePasswordButton = new JButton("Change Password");
+        changePasswordButton.setBackground(new Color(83, 109, 254));
+        changePasswordButton.setForeground(Color.WHITE);
+        changePasswordButton.setFocusPainted(false);
+        changePasswordButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+        // Add action listener to logout button
+        logoutButton.addActionListener(e -> {
+            // Create and show welcome page
+            WelcomePage welcomePage = new WelcomePage();
+            welcomePage.setVisible(true);
+
+            // Dispose of this frame
+            dispose();
+        });
+
+        // Add action listener to change password button
+        changePasswordButton.addActionListener(e -> showChangePasswordDialog());
+
+        // Create button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        buttonPanel.add(changePasswordButton);
+        buttonPanel.add(logoutButton);
+
+        // Create a panel for the left side (info + buttons)
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(infoPanel, BorderLayout.CENTER);
+        leftPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Create panel for profile photo
+        JPanel photoPanel = new JPanel();
+        photoPanel.setLayout(new BoxLayout(photoPanel, BoxLayout.Y_AXIS));
+        photoPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 10, 10));
+        photoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Create a label to display the profile photo
+        JLabel photoLabel = new JLabel();
+        photoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        photoLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        // Load default profile picture
+        try {
+            ImageIcon defaultPhoto = new ImageIcon(getClass().getClassLoader().getResource("default_profile_picture.jpg"));
+            // Scale the image to a reasonable size
+            Image scaledImage = defaultPhoto.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
+            photoLabel.setIcon(new ImageIcon(scaledImage));
+        } catch (Exception ex) {
+            photoLabel.setText("No photo available");
+            System.err.println("Error loading default profile picture: " + ex.getMessage());
+        }
+
+        // Create button to change profile photo
+        JButton changePhotoButton = new JButton("Change Photo");
+        changePhotoButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        changePhotoButton.setMaximumSize(new Dimension(180, 30));
+
+        // Add action listener to change photo button
+        changePhotoButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(
+                    "Image files", "jpg", "jpeg", "png", "gif"));
+
+            int result = fileChooser.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                try {
+                    // Load the selected image
+                    java.io.File selectedFile = fileChooser.getSelectedFile();
+                    BufferedImage img = javax.imageio.ImageIO.read(selectedFile);
+
+                    // Update the user's profile picture
+                    admin.setProfilePicture(img);
+
+                    // Convert BufferedImage to Image and scale it
+                    Image image = img;
+                    Image scaledImage = image.getScaledInstance(180, 180, Image.SCALE_SMOOTH);
+                    photoLabel.setIcon(new ImageIcon(scaledImage));
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, 
+                            "Error loading image: " + ex.getMessage(), 
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        // Add components to photo panel - position photo higher
+        photoPanel.add(photoLabel);
+        photoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        photoPanel.add(changePhotoButton);
+        photoPanel.add(Box.createVerticalGlue());
+
+        // Add panels to split pane
+        splitPane.setLeftComponent(leftPanel);
+        splitPane.setRightComponent(photoPanel);
+
+        // Add split pane to home panel
+        homePanel.add(splitPane, BorderLayout.CENTER);
+    }
+
+    private void showChangePasswordDialog() {
+        // Create a dialog for changing password
+        JDialog passwordDialog = new JDialog(this, "Change Password", true);
+        passwordDialog.setSize(300, 200);
+        passwordDialog.setLocationRelativeTo(this);
+
+        // Create panel for dialog content
+        JPanel dialogPanel = new JPanel();
+        dialogPanel.setLayout(new BoxLayout(dialogPanel, BoxLayout.Y_AXIS));
+        dialogPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        // Create password fields
+        JPasswordField newPasswordField = new JPasswordField();
+        newPasswordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        newPasswordField.setBorder(BorderFactory.createTitledBorder("New Password"));
+
+        JPasswordField confirmPasswordField = new JPasswordField();
+        confirmPasswordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        confirmPasswordField.setBorder(BorderFactory.createTitledBorder("Confirm New Password"));
+
+        // Create buttons
+        JButton saveButton = new JButton("Save");
+        saveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Create button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+
+        // Create label for status messages
+        JLabel statusLabel = new JLabel("");
+        statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        statusLabel.setForeground(Color.RED);
+
+        // Add components to dialog panel
+        dialogPanel.add(newPasswordField);
+        dialogPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        dialogPanel.add(confirmPasswordField);
+        dialogPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        dialogPanel.add(buttonPanel);
+        dialogPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        dialogPanel.add(statusLabel);
+
+        // Add action listener to save button
+        saveButton.addActionListener(e -> {
+            String newPassword = new String(newPasswordField.getPassword());
+            String confirmPassword = new String(confirmPasswordField.getPassword());
+
+            if (newPassword.isEmpty()) {
+                statusLabel.setText("Password cannot be empty");
+                return;
+            }
+
+            if (!newPassword.equals(confirmPassword)) {
+                statusLabel.setText("Passwords do not match");
+                return;
+            }
+
+            // Update the password
+            admin.setPassword(newPassword);
+
+            // Close the dialog
+            passwordDialog.dispose();
+
+            // Show success message
+            JOptionPane.showMessageDialog(this, 
+                    "Password changed successfully", 
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        // Add action listener to cancel button
+        cancelButton.addActionListener(e -> passwordDialog.dispose());
+
+        // Set dialog content and show
+        passwordDialog.setContentPane(dialogPanel);
+        passwordDialog.setVisible(true);
     }
 }
